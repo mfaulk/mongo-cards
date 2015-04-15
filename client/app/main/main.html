@@ -2,14 +2,21 @@
 
 <div class="container">
 
-  <form class="thing-form">
-    <label>Interactive Querying</label>
-    <p class="input-group">
-      <input type="text" class="form-control" placeholder="Enter a query." ng-model="queryString">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-primary" ng-click="query()">Query</button>
-      </span>
-    </p>
-  </form>
-</div>
+	<form class="thing-form">
+		<label>Interactive Querying</label>
 
+		<div class="panel panel-default" ng-repeat="result in queryResults">
+			<div class="panel-body">
+				<p>QUERY: {{result.query}}</p>
+				{{result.elements | json}}
+			</div>
+		</div>
+
+		<p class="input-group">
+			<input type="text" class="form-control" placeholder="Enter a query." ng-model="queryString">
+			<span class="input-group-btn">
+				<button type="submit" class="btn btn-primary" ng-click="query()">Query</button>
+			</span>
+		</p>
+	</form>
+</div>
