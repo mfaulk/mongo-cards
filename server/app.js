@@ -43,7 +43,4 @@ socketio.on('connection', function (socket) {
 		socket.emit('news', { hello: 'world' });
 	}, 3000);
   	
-  // socket.on('my other event', function (data) {
-  //   console.log(data);
-  // });
 });
