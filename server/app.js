@@ -35,3 +35,15 @@ server.listen(config.port, config.ip, function () {
 
 // Expose app
 exports = module.exports = app;
+
+socketio.on('connection', function (socket) {
+	console.log('socketio connection');
+	setInterval(function () {
+		console.log('emitting...');
+		socket.emit('news', { hello: 'world' });
+	}, 3000);
+  	
+  // socket.on('my other event', function (data) {
+  //   console.log(data);
+  // });
+});
