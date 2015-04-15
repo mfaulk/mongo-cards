@@ -18,6 +18,7 @@ var config = require('./config/environment');
 // if(config.seedDB) { require('./config/seed'); }
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 var db;
+var thingsCollection;
 
 // Connection URL
 //var mongo_url = 'mongodb://localhost:27017/myproject';
@@ -25,7 +26,7 @@ MongoClient.connect(config.mongo.uri, function(err, database) {
   assert.equal(null, err);
   console.log("Connected correctly to server");
   db = database;
-  var thingsCollection = db.collection('things');
+  thingsCollection = db.collection('things');
   var findString = '{"name":"Modular Structure"}';
   var o = JSON.parse(findString);
   console.log(o);
@@ -44,7 +45,7 @@ var socketio = require('socket.io')(server, {
 });
 require('./config/socketio')(socketio);
 require('./config/express')(app);
-require('./routes')(app);
+//require('./routes')(app);
 
 // Start server
 server.listen(config.port, config.ip, function () {
@@ -62,6 +63,18 @@ socketio.on('connection', function (socket) {
 	// }, 3000);
 });
 
-
-// Close connections
-// _db.close();
+// Routes for search API
+var router = express.Router();
+router.get('/search', function(req, res) {
+    var jsonString = req.query.json;
+    console.log(jsonString);
+    var o = JSON.parse(jsonString);
+    console.log(o);
+    thingsCollection.find(o).toArray(function(err, docs) {
+    console.log(docs.length);
+    console.dir(docs)
+    res.json(docs);
+  }); 
+       
+});
+app.use('/api/v1', router);
