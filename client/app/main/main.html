@@ -8,7 +8,13 @@
 		<div class="panel panel-default" ng-repeat="result in queryResults">
 			<div class="panel-body">
 				<p>QUERY: {{result.query}}</p>
-				{{result.elements | json}}
+				<div class="panel" ng-repeat="e in result.elements">
+					<table style="width:100%">
+					<tr ng-repeat="(key, value) in e">
+  						<td> {{key}} </td> <td> {{ value }} </td>
+					</tr>
+				</table>	
+				</div>
 			</div>
 		</div>
 
