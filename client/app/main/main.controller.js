@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('mongoCardsApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
-    console.log(socket.socket);
-    socket.socket.on('news', function (data) {
+  .controller('MainCtrl', function ($scope, $http, socketio) {
+    console.log(socketio.socket);
+    socketio.socket.on('news', function (data) {
       console.log('news');
     });
 
