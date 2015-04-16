@@ -10,6 +10,7 @@ angular.module('mongoCardsApp')
 .controller('MainCtrl', function ($scope, $http, socketio) {
   console.log(socketio.socket);
 
+    $scope.rowLimit = 10;
     // socketio.socket.on('news', function (data) {
     //   console.log('news');
     // });

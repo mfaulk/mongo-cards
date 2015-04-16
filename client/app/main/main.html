@@ -8,7 +8,7 @@
 		<div class="panel panel-default" ng-repeat="result in queryResults">
 			<div class="panel-body">
 				<p>QUERY: {{result.query}}</p>
-				<div class="panel" ng-repeat="e in result.elements">
+				<div class="panel" ng-repeat="e in result.elements | limitTo:rowLimit">
 					<table style="width:100%">
 					<tr ng-repeat="(key, value) in e">
   						<td> {{key}} </td> <td> {{ value }} </td>
@@ -16,6 +16,14 @@
 				</table>	
 				</div>
 			</div>
+
+			<p class="input-group">
+			<input type="text" class="form-control" placeholder="Annotate" ng-model="annotateString">
+			<span class="input-group-btn">
+				<button type="submit" class="btn btn-primary" ng-click="annotate()">Annotate</button>
+			</span>
+		</p>
+
 		</div>
 
 		<p class="input-group">
