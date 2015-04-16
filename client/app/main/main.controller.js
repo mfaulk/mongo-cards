@@ -63,7 +63,7 @@ angular.module('mongoCardsApp')
         socketio.socket.on(streamID, function(streamData){
           console.log(streamData);
           $scope.$apply(function (){
-            $scope.cards[c.id].elements.push(streamData);
+            $scope.cards[c.id].elements.unshift(streamData);
           });
         });
       });
