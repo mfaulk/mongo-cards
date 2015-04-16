@@ -1,31 +1,30 @@
 'use strict';
 
 angular.module('mongoCardsApp')
-.filter('prettyJSON', function () {
-    function syntaxHighlight(json) {
-      return JSON ? JSON.stringify(json, null, '  ') : 'your browser doesnt support JSON so cant pretty print';
-    }
-    return syntaxHighlight;
-})
 .controller('MainCtrl', function ($scope, $http, socketio) {
   console.log(socketio.socket);
+    
+    var count=0;
+    function nextID() {
+      return count++;
+    }
 
+    // Max number of rows displayed in each card.
     $scope.rowLimit = 10;
-    // socketio.socket.on('news', function (data) {
-    //   console.log('news');
-    // });
+  
+    var Card = function (queryString, queryResults) {
+      this.id = nextID();
+      this.query = queryString;
+      this.elements = queryResults;
+    };
 
-    // An array of objects containing a query and array of search results
-    //$scope.queryResults = [{query:'a query', elements:[{foo:'bar'}, {baz:'qux'}]}];
-    $scope.queryResults = [];
-
-    $scope.queryString = '';
+    // Mapping from card ID to card.
+    $scope.cards = {};
 
     $scope.query = function() {
       if ($scope.queryString) {
         console.log('Querying: ' + $scope.queryString);
         var queryObj = angular.toJson($scope.queryString);
-        console.log(queryObj);
        $http
        .get('/api/v1/search', {
         params: {
@@ -33,14 +32,15 @@ angular.module('mongoCardsApp')
         }
       })
        .success(function (data, status) {
-        console.log(data);
         var dataObj = angular.fromJson(data);
-        console.log(dataObj);
-        $scope.queryResults.push({query:$scope.queryString, elements:dataObj});
+        var c = new Card($scope.queryString, dataObj);
+        $scope.cards[c.id] = c;
       });
-
-       
      }
    };
+
+    // socketio.socket.on('news', function (data) {
+    //   console.log('news');
+    // });
 
  });

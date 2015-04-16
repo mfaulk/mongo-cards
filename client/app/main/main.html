@@ -5,10 +5,10 @@
 	<form class="thing-form">
 		<label>Interactive Querying</label>
 
-		<div class="panel panel-default" ng-repeat="result in queryResults">
+		<div class="panel panel-default" ng-repeat="card in cards">
 			<div class="panel-body">
-				<p>QUERY: {{result.query}}</p>
-				<div class="panel" ng-repeat="e in result.elements | limitTo:rowLimit">
+				<p>QUERY: {{card.query}}</p>
+				<div class="panel" ng-repeat="e in card.elements | limitTo:rowLimit">
 					<table style="width:100%">
 					<tr ng-repeat="(key, value) in e">
   						<td> {{key}} </td> <td> {{ value }} </td>
