@@ -12,10 +12,10 @@ var mongoose = require('mongoose');
 var config = require('./config/environment');
 
 // Connect to database
-//mongoose.connect(config.mongo.uri, config.mongo.options);
-
+mongoose.connect(config.mongo.uri, config.mongo.options);
 // Populate DB with sample data
-// if(config.seedDB) { require('./config/seed'); }
+if(config.seedDB) { require('./config/seed'); }
+
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 var db;
 var thingsCollection;
@@ -27,13 +27,6 @@ MongoClient.connect(config.mongo.uri, function(err, database) {
   console.log("Connected correctly to server");
   db = database;
   thingsCollection = db.collection('things');
-  var findString = '{"name":"Modular Structure"}';
-  var o = JSON.parse(findString);
-  console.log(o);
-  thingsCollection.find(o).toArray(function(err, docs) {
-    console.log(docs.length);
-    console.dir(docs)
-  }); 
 });
 
 // Setup server
@@ -57,24 +50,58 @@ exports = module.exports = app;
 
 socketio.on('connection', function (socket) {
 	console.log('socketio connection');
-	// setInterval(function () {
-	// 	console.log('emitting...');
-	// 	socket.emit('news', { hello: 'world' });
-	// }, 3000);
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
 });
 
 // Routes for search API
 var router = express.Router();
+var cursors = {};
+
 router.get('/search', function(req, res) {
     var jsonString = req.query.json;
-    console.log(jsonString);
+    var id = req.query.queryID;
+    console.log("query string: " + jsonString + " queryID: " + id);
     var o = JSON.parse(jsonString);
-    console.log(o);
+    //console.log(o);
     thingsCollection.find(o).toArray(function(err, docs) {
-    console.log(docs.length);
-    console.dir(docs)
+    console.log("Found " + docs.length + " documents.");
+    //console.dir(docs)
     res.json(docs);
-  }); 
-       
+  });     
 });
+
+
+
+router.get('/searchstream', function(req, res) {
+    console.log('searchstream');
+    var jsonString = req.query.json;
+    var id = req.query.queryID;
+    console.log("query string: " + jsonString + " queryID: " + id);
+    var o = JSON.parse(jsonString);
+    //console.log(o);
+    
+    var cursorOptions = {
+      tailable: true,
+      await_data: true,
+      numberOfRetries: -1
+    }
+
+    var cursor = thingsCollection.find(o, cursorOptions)
+      .sort({$natural: -1})
+      .stream();
+    var streamID = 'stream' + id;
+
+    cursor.on('data', function (doc) {
+      console.log('streaming to socketio...');
+      console.log(doc);
+      console.log(streamID);
+      socketio.emit(streamID, doc);
+    });
+    cursors[streamID] = cursor;
+    res.json({streamID:streamID}); 
+});
+
+
 app.use('/api/v1', router);
